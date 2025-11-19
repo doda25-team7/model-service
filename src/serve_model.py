@@ -50,5 +50,6 @@ def predict():
 
 if __name__ == '__main__':
     #clf = joblib.load('output/model.joblib')
+    # get the port from the environment variable, default to 8081 if not set
     port = int(os.environ.get('MODEL_PORT', 8081))
     app.run(host="0.0.0.0", port=port, debug=True)
