@@ -30,12 +30,11 @@ jobs:
 
         IMG="ghcr.io/${{github.repository}}"
         IMG=${IMG@L}
-        docker buildx build --output type=docker --platform linux/amd64,linux/arm64 \
+        docker buildx build --platform linux/amd64,linux/arm64 \
           --tag $IMG:latest \
           --tag $IMG:$VERS \
+          --push \
           .
-
-        docker push --all-tags $IMG
 
     - uses: stefanzweifel/git-auto-commit-action@v7
       id: auto-commit-action
