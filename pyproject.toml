@@ -1,6 +1,6 @@
 [project]
 name = "model-service"
-version = "0.0.6"
+version = "0.0.1"
 dependencies = [
     "flasgger==0.9.7.1",
     "flask==2.3.3",

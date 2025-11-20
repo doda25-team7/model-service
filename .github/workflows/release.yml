@@ -1,0 +1,38 @@
+name: Release
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+
+    - uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - run: |
+        VERS=$(uv version --bump patch --short)
+
+        IMG="ghcr.io/${{github.repository}}"
+        IMG=${IMG@L}
+        docker build \
+          --tag $IMG:latest \
+          --tag $IMG:$VERS \
+          .
+
+        docker push --all-tags $IMG
+
+    - uses: stefanzweifel/git-auto-commit-action@v7
+      id: auto-commit-action
+      with:
+        commit_message: Automatic verison bump skip-checks:true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
