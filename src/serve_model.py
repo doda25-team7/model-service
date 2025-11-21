@@ -5,6 +5,7 @@ import joblib
 from flask import Flask, jsonify, request
 from flasgger import Swagger
 import pandas as pd
+import os
 import urllib.request
 
 from text_preprocessing import prepare, _extract_message_len, _text_process
@@ -51,6 +52,9 @@ def predict():
     return jsonify(res)
 
 if __name__ == '__main__':
+    #clf = joblib.load('output/model.joblib')
+    # get the port from the environment variable, default to 8081 if not set
+    
     try:
       app.model = joblib.load('model.joblib') 
     except FileNotFoundError:
@@ -59,4 +63,5 @@ if __name__ == '__main__':
     
     app.model = joblib.load('model.joblib')
     
-    app.run(host="0.0.0.0", port=8081, debug=True)
+    port = int(os.environ.get('MODEL_PORT', 8081))
+    app.run(host="0.0.0.0", port=port, debug=True)
