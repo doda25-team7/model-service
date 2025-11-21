@@ -6,7 +6,11 @@ from flask import Flask, jsonify, request
 from flasgger import Swagger
 import pandas as pd
 import os
+import urllib.request
+
 from text_preprocessing import prepare, _extract_message_len, _text_process
+
+model_url = "https://github.com/doda25-team7/model-service/releases/latest/download/model.joblib"
 
 app = Flask(__name__)
 swagger = Swagger(app)
@@ -37,8 +41,7 @@ def predict():
     input_data = request.get_json()
     sms = input_data.get('sms')
     processed_sms = prepare(sms)
-    model = joblib.load('output/model.joblib')
-    prediction = model.predict(processed_sms)[0]
+    prediction = app.model.predict(processed_sms)[0]
     
     res = {
         "result": prediction,
@@ -51,5 +54,14 @@ def predict():
 if __name__ == '__main__':
     #clf = joblib.load('output/model.joblib')
     # get the port from the environment variable, default to 8081 if not set
+    
+    try:
+      app.model = joblib.load('model.joblib') 
+    except FileNotFoundError:
+      print("model.joblib not found, downloading")
+      urllib.request.urlretrieve(model_url, "model.joblib")
+    
+    app.model = joblib.load('model.joblib')
+    
     port = int(os.environ.get('MODEL_PORT', 8081))
     app.run(host="0.0.0.0", port=port, debug=True)
