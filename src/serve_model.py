@@ -10,7 +10,7 @@ import urllib.request
 
 from text_preprocessing import prepare, _extract_message_len, _text_process
 
-model_url = "https://github.com/doda25-team7/model-service/releases/latest/download/model.joblib"
+model_url = os.environ.get('MODEL_URL')
 
 app = Flask(__name__)
 swagger = Swagger(app)
@@ -58,7 +58,10 @@ if __name__ == '__main__':
     try:
       app.model = joblib.load('model.joblib') 
     except FileNotFoundError:
-      print("model.joblib not found, downloading")
+      print("model.joblib not found, attempting download")
+      if not model_url:
+        print("model_url is not defined, please define it in MODEL_URL enviroment variable")
+        exit()
       urllib.request.urlretrieve(model_url, "model.joblib")
     
     app.model = joblib.load('model.joblib')
