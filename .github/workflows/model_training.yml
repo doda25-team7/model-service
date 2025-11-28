@@ -1,0 +1,41 @@
+name: Train Model
+on: 
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Model release version'
+        required: true
+        type: string
+
+
+jobs:
+  train-model:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+    
+    - name: Sync Python dependencies
+      run: |
+        uv sync --locked
+
+    - name: Train model
+      run: |
+        rm -r output
+        mkdir output
+        uv run src/read_data.py
+        uv run src/text_preprocessing.py
+        uv run src/text_classification.py
+    
+    - name: Publish model
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+      run: |
+        gh release create ${{ inputs.releaseVersion }} 
+        gh release upload ${{ inputs.releaseVersion }} output/model.joblib
