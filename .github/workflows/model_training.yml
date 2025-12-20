@@ -32,10 +32,14 @@ jobs:
         uv run src/text_preprocessing.py
         uv run src/text_classification.py
     
+    - name: Compres training output
+      run: |
+        zip -r output.zip output
+
     - name: Publish model
       env:
         GH_TOKEN: ${{ github.token }}
         GH_REPO: ${{ github.repository }}
       run: |
         gh release create ${{ inputs.releaseVersion }} 
-        gh release upload ${{ inputs.releaseVersion }} output/model.joblib
+        gh release upload ${{ inputs.releaseVersion }} output.zip
