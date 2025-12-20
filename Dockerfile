@@ -10,8 +10,6 @@ COPY uv.lock .
 COPY src ./src
 RUN uv sync --locked
 
-COPY output ./output
-
 EXPOSE 8081
 
 

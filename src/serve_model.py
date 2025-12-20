@@ -4,9 +4,11 @@ Flask API of the SMS Spam detection model model.
 import joblib
 from flask import Flask, jsonify, request
 from flasgger import Swagger
+from waitress import serve
 import pandas as pd
 import os
 import urllib.request
+import zipfile
 
 from text_preprocessing import prepare, _extract_message_len, _text_process
 
@@ -52,19 +54,18 @@ def predict():
     return jsonify(res)
 
 if __name__ == '__main__':
-    #clf = joblib.load('output/model.joblib')
-    # get the port from the environment variable, default to 8081 if not set
-    
-    try:
-      app.model = joblib.load('model.joblib') 
-    except FileNotFoundError:
-      print("model.joblib not found, attempting download")
-      if not model_url:
-        print("model_url is not defined, please define it in MODEL_URL enviroment variable")
-        exit()
-      urllib.request.urlretrieve(model_url, "model.joblib")
-    
-    app.model = joblib.load('model.joblib')
+    if not os.path.isfile("output/model.joblib") or not os.isfile("output/preprocessor.joblib"):
+        print("models not found, attempting download")
+        urllib.request.urlretrieve(model_url, "output.zip")
+        with zipfile.ZipFile("output.zip") as output_zip:
+           output_zip.extractall(".") # the output zip contains a folder named output
+        print("models downloaded and extracted into output folder")
+
+    app.model = joblib.load('output/model.joblib') 
     
     port = int(os.environ.get('MODEL_PORT', 8081))
-    app.run(host="0.0.0.0", port=port, debug=True)
+
+    # Use waitress instead of the debug WSGI server
+    # As suggested in https://stackoverflow.com/a/54381386
+    print("serving model using waitress serve")
+    serve(app, host="0.0.0.0", port=port)
