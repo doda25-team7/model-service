@@ -54,7 +54,7 @@ def predict():
     return jsonify(res)
 
 if __name__ == '__main__':
-    if not os.path.isfile("output/model.joblib") or not os.isfile("output/preprocessor.joblib"):
+    if not os.path.isfile("output/model.joblib") or not os.path.isfile("output/preprocessor.joblib"):
         print("models not found, attempting download")
         urllib.request.urlretrieve(model_url, "output.zip")
         with zipfile.ZipFile("output.zip") as output_zip:

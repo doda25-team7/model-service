@@ -1,5 +1,5 @@
 FROM python:3.11-slim
-COPY --from=ghcr.io/astral-sh/uv:0.9.10 /uv /uvx /bin/
+RUN pip install uv
 
 ENV MODEL_PORT=8081
 
@@ -8,7 +8,10 @@ WORKDIR /app
 COPY pyproject.toml .
 COPY uv.lock .
 COPY src ./src
-RUN uv sync --locked
+COPY smsspamcollection ./smsspamcollection
+RUN mkdir output
+RUN uv run src/text_preprocessing.py
+RUN uv run src/text_classification.py
 
 EXPOSE 8081
 
