@@ -1,5 +1,5 @@
 FROM python:3.11-slim
-RUN pip install uv
+RUN pip install uv==0.9.22
 
 ENV MODEL_PORT=8081
 
