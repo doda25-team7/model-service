@@ -8,10 +8,8 @@ WORKDIR /app
 COPY pyproject.toml .
 COPY uv.lock .
 COPY src ./src
-COPY smsspamcollection ./smsspamcollection
-RUN mkdir output
-RUN uv run src/text_preprocessing.py
-RUN uv run src/text_classification.py
+RUN mkdir data
+RUN uv sync --locked
 
 EXPOSE 8081
 
