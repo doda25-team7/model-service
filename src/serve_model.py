@@ -54,14 +54,14 @@ def predict():
     return jsonify(res)
 
 if __name__ == '__main__':
-    if not os.path.isfile("output/model.joblib") or not os.path.isfile("output/preprocessor.joblib"):
+    if not os.path.isfile("data/output/model.joblib") or not os.path.isfile("data/output/preprocessor.joblib"):
         print("models not found, attempting download")
-        urllib.request.urlretrieve(model_url, "output.zip")
-        with zipfile.ZipFile("output.zip") as output_zip:
-           output_zip.extractall(".") # the output zip contains a folder named output
+        urllib.request.urlretrieve(model_url, "data/output.zip")
+        with zipfile.ZipFile("data/output.zip") as output_zip:
+           output_zip.extractall("data") # the output zip contains a folder named output
         print("models downloaded and extracted into output folder")
 
-    app.model = joblib.load('output/model.joblib') 
+    app.model = joblib.load('data/output/model.joblib') 
     
     port = int(os.environ.get('MODEL_PORT', 8081))
 
