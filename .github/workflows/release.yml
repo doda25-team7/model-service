@@ -31,6 +31,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     - run: |
         VERS=$(uv version --bump patch --short)
+        echo "VERSION=$VERS" >> $GITHUB_ENV
 
         IMG="ghcr.io/${{github.repository}}"
         IMG=${IMG@L}
@@ -44,5 +45,6 @@ jobs:
       id: auto-commit-action
       with:
         commit_message: "[skip ci] Automatic version bump \n\nskip-checks:true"
+        tag_name: "v${{ env.VERSION }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
